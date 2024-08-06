@@ -5,8 +5,6 @@ import java.util.List;
 
 public class ThreadInfo {
 
-    private List<String> threadLine = new ArrayList<>(); 
-
     private static final SimpleDateFormat DATE_FORMAT         = new SimpleDateFormat("yyyy-MM-dd");
     private static final SimpleDateFormat DATE_TIME_FORMAT_HH = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
     private static final SimpleDateFormat DATE_TIME_FORMAT_MI = new SimpleDateFormat("yyyy-MM-dd HH:mm:00");

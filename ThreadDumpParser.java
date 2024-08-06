@@ -19,7 +19,7 @@ public class ThreadDumpParser {
     };
 
     public static void main(String[] args) {
-        String inputDirPath = "C:\\Users\\vrica\\Downloads\\crossjoin\\crossjoin_td_test"; 
+        String inputDirPath = "D:\\Work\\GitRepo\\Workspace\\CodeTest\\crossjoin\\crossjoin_td_test"; 
         String outputFilePath = "output.csv";
 
         try {
