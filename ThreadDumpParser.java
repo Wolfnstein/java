@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 public class ThreadDumpParser {
       
-    private static String inputDirPath   = "D:\\Work\\GitRepo\\Workspace\\CodeTest\\crossjoin\\tuxedo-adapter-service-primary-7b78c65dc8-nl95v_20210329015750"; 
+    private static String inputDirPath   = "D:\\Work\\GitRepo\\Workspace\\CodeTest\\crossjoin\\crossjoin_td_test"; 
     private static String outputFilePath = "D:\\Work\\GitRepo\\Workspace\\CodeTest\\crossjoin\\java\\output.csv";
 
     private static final String[] headers = {

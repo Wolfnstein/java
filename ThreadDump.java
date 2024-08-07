@@ -20,24 +20,8 @@ public class ThreadDump {
     private String state;
     private List<String> stackTrace = new ArrayList<>();
 
-    private String prio;
-    private String osPrio;
-    private String tid;
-    private String nid;
-
     private String quotedPart;
     private String restPart;
-
-
-    // _java_thread_list=0x00007f44ec0d5620, length=173, elements={ .. }
-
-    public void parseThreadList(String line) { 
-        // _java_thread_list
-    }
-
-    public void parseThreadListElementsCount(String line) { 
-        // _java_thread_list ... 
-    }
 
     public void parseDateLine(String line){
 
@@ -69,23 +53,12 @@ public class ThreadDump {
         } else {
             this.threadType = this.threadName;  // If no hyphen, use the entire thread name
         }
-
-        //parseDetailsLine(restPart);
     }
 
     //java.lang.Thread.State: RUNNABLE
 
     public void parseStateLine(String line) {
         this.state = line.split("java.lang.Thread.State: ")[1];
-    }
-
-    // #2 daemon prio=10 os_prio=0 cpu=87.32ms elapsed=32144.63s tid=0x00007f452c32d800 nid=0xe waiting on condition  [0x00007f450cefc000]
-    public void parseDetailsLine(String line) {
-        String[] parts = line.split(" ");
-        this.prio = parts[0].split("prio=")[1];
-        this.osPrio = parts[1].split("osPrio=")[1];
-        this.tid = parts[2].split("tid=")[1];
-        this.nid = parts[3].split("nid=")[1];
     }
 
     public void addStackTrace(String line) {
@@ -95,7 +68,6 @@ public class ThreadDump {
     public List<String> toCSVRecord() {
         List<String> record = new ArrayList<>();
 
-        //Date dumpDate = new Date();
         record.add(DATE_FORMAT.format(this.threadDate));
         record.add(DATE_TIME_FORMAT_HH.format(this.threadDate));
         record.add(DATE_TIME_FORMAT_MI.format(this.threadDate));
@@ -103,16 +75,9 @@ public class ThreadDump {
         record.add(this.threadType);
         record.add(this.threadName);
         record.add(this.state);
-        record.add(stackTrace.isEmpty() ? "" : stackTrace.get(0));
+        record.add(stackTrace.isEmpty() ? "" : stackTrace.get(0).replaceAll("at ", ""));
         record.add(getLastCustomCall());
-        
-        //record.add(this.prio);
-        //record.add(this.osPrio);
-        //record.add("");  // cpu value
-        //record.add("");  // elapsed value
-        //record.add(this.tid);
-        //record.add(this.nid);
-        
+
         return record;
     }
 
