@@ -115,13 +115,13 @@ public class ThreadDumpParser {
                     currentThreadInfo.parseStateLine(line);
                 }
                 
-            // para cada Thread podemos ver os stacktrace nas linhas que começam por "at "
+            // para cada Thread podemos ver os stacktrace nas linhas que começam por 'at '
             } else if (line.contains("at ")) {
                 
                 // garantir que currentThreadInfo não é null antes de iniciar o parse da linha
                 if (currentThreadInfo != null) {
-                    // fazer o parse das linhas de stacktrace 
-                    currentThreadInfo.addStackTrace(line);
+                    // fazer o parse das linhas de stacktrace com a string que se encontra na frente de 'at '
+                    currentThreadInfo.addStackTrace(line.split("at ")[1]);
                 }
             }
         }
