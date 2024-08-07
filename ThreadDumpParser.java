@@ -15,10 +15,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 public class ThreadDumpParser {
     
+    // nota: devia por estas duas varaiaveis como parametros de entrada para serem definidos por ai
+    // e não estarem hard coded mas 
+
     // diretoria onde se encontram os dumps a serem analisados
-    private static String inputDirPath   = "D:\\Work\\GitRepo\\Workspace\\CodeTest\\crossjoin\\crossjoin_td_test"; 
+    private static String inputDirPath   = "D:\\Work\\GitRepo\\Workspace\\CodeTest\\crossjoin\\java\\crossjoin_td_test"; 
     // diretoria de output do ficheiro csv
-    private static String outputFilePath = "output.csv";
+    private static String outputFilePath = "D:\\Work\\GitRepo\\Workspace\\CodeTest\\crossjoin\\java\\crossjoin_td_test\\output.csv";
 
     // array de strings com o cabeçalho do csv
     private static final String[] headers = {
@@ -86,27 +89,43 @@ public class ThreadDumpParser {
                 fileDateTime = line;
             }
             
-            // cada ThreadDump começa com " no inicio da linha
+            // cada ThreadDump começa com " no inicio da linha, excepto os Threads que estiverem na
             if (line.startsWith("\"") && !IsExcluded(line,exclusions)  ) {
+                
+                // garantir que o ultimo objeto do tipo ThreadDump é adicionado
                 if (currentThreadInfo != null) {
                     allThreads.add(currentThreadInfo);
                 }                
+
+                // criamos um novo objeto do tipo ThreadDump
                 currentThreadInfo = new ThreadDump();
 
+                // fazer o parse da data
                 currentThreadInfo.parseDateLine(fileDateTime);
                 
-                // criamos um ThreadInfo                
+                // fazer o parse da linha              
                 currentThreadInfo.parseThreadLine(line);                                
             
             // para cada Thread podemos ter o seu estado se encontrar-mos um .. 
             } else if (line.contains("java.lang.Thread.State:")) {
-                currentThreadInfo.parseStateLine(line);
+
+                // garantir que currentThreadInfo não é null antes de iniciar o parse da linha
+                if (currentThreadInfo != null) {
+                    // fazer parse da linha com o estado do Thread
+                    currentThreadInfo.parseStateLine(line);
+                }
+                
             // para cada Thread podemos ver os stacktrace nas linhas que começam por "at "
             } else if (line.contains("at ")) {
-                currentThreadInfo.addStackTrace(line);
+                
+                // garantir que currentThreadInfo não é null antes de iniciar o parse da linha
+                if (currentThreadInfo != null) {
+                    // fazer o parse das linhas de stacktrace 
+                    currentThreadInfo.addStackTrace(line);
+                }
             }
         }
-        // adicionar a thread na lista com todas as Threads encontradas.
+        // garantir que adicionamos a thread na lista com todas as Threads encontradas.
         if (currentThreadInfo != null) {
             allThreads.add(currentThreadInfo);
         }
