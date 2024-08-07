@@ -105,7 +105,8 @@ public class ThreadDumpParser {
 
     private static boolean isDate(String line) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try { Date date = dateFormat.parse(line);  return true; } catch (ParseException e) { return false; }
+        try { @SuppressWarnings("unused")
+        Date date = dateFormat.parse(line);  return true; } catch (ParseException e) { return false; }
     }
 
     private static boolean IsExcluded(String line, String[] exclusions) {
