@@ -19,9 +19,9 @@ public class ThreadDumpParser {
     // e não estarem hard coded mas 
 
     // diretoria onde se encontram os dumps a serem analisados
-    private static String inputDirPath   = "D:\\Work\\GitRepo\\Workspace\\CodeTest\\crossjoin\\java\\crossjoin_td_test"; 
+    private static String inputDirPath   = "C:\\crossjoin_td_test"; 
     // diretoria de output do ficheiro csv
-    private static String outputFilePath = "D:\\Work\\GitRepo\\Workspace\\CodeTest\\crossjoin\\java\\crossjoin_td_test\\output.csv";
+    private static String outputFilePath = "C:\\crossjoin_td_test\\output.csv";
 
     // array de strings com o cabeçalho do csv
     private static final String[] headers = {
