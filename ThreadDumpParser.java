@@ -51,18 +51,13 @@ public class ThreadDumpParser {
     // metodo para devolver uma lista com a analise de todos os ThreadDumps de um ficheiro.
     private static List<ThreadDump> parseThreadDump(String filePath) throws IOException {
         
-        // buffer standard de leitura de um ficheiro
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
-        
         // lista vazia de objectos do tipo ThreadDump para se adicionar todos os thread dumps analisados do ficheiro
         List<ThreadDump> allThreads = new ArrayList<>();
-        
-        String fileDateTime = null;
 
-        // adicionar a primeira linha com a data ao objecto do tipo ThreadDump
-        if (isDate(reader.readLine())){
-            fileDateTime = reader.readLine();
-        }
+        // buffer standard de leitura de um ficheiro
+        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+              
+        String fileDateTime = "";
 
         // linha a ser analisada
         String line;    
@@ -71,22 +66,29 @@ public class ThreadDumpParser {
 
         // enquanto o buffer de leitura tiver linhas para serem lidas ... 
         while ((line = reader.readLine()) != null) {
-            
-            if (currentThreadInfo != null) {
-                allThreads.add(currentThreadInfo);
+
+            if (isDate(line)){
+                fileDateTime = line;
             }
-            
-            currentThreadInfo = new ThreadDump();
-            currentThreadInfo.parseDateLine(fileDateTime);
             
             // cada ThreadDump começa com " no inicio da linha
             if (line.startsWith("\"")) {
+                if (currentThreadInfo != null) {
+                    allThreads.add(currentThreadInfo);
+                }                
+                currentThreadInfo = new ThreadDump();
+
+                currentThreadInfo.parseDateLine(fileDateTime);
+                
                 // criamos um ThreadInfo                
                 currentThreadInfo.parseThreadLine(line);
+                                
             
             // para cada Thread podemos ter o seu estado se encontrar-mos um .. 
             } else if (line.contains("java.lang.Thread.State:")) {
                 currentThreadInfo.parseStateLine(line);
+            } else if (line.contains("at ")) {
+                currentThreadInfo.addStackTrace(line);
             }
         }
         if (currentThreadInfo != null) {

@@ -119,7 +119,7 @@ public class ThreadDump {
     private String getLastCustomCall() {
         // Custom logic to identify the last custom call from the stack trace
         for (String line : stackTrace) {
-            if (line.contains("com.example")) {  // Adjust based on your application's package
+            if (line.contains("com.rabbitmq.client")) {  // Adjust based on your application's package
                 return line;
             }
         }
