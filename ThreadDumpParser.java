@@ -23,6 +23,10 @@ public class ThreadDumpParser {
             //",prio value", "os_prio value", "cpu value", "elapsed value", "tid value", "nid value"
     };
 
+    private static String[] exclusions =  {
+        "VM Thread", "GC Thread#0", "G1 Main Marker", "G1 Conc#0", "G1 Refine#0", "G1 Young RemSet Sampling", "VM Periodic Task Thread"
+    };
+
     public static void main(String[] args) {
         try {
 
@@ -72,7 +76,7 @@ public class ThreadDumpParser {
             }
             
             // cada ThreadDump começa com " no inicio da linha
-            if (line.startsWith("\"")) {
+            if (line.startsWith("\"") && !IsExcluded(line,exclusions)  ) {
                 if (currentThreadInfo != null) {
                     allThreads.add(currentThreadInfo);
                 }                
@@ -104,13 +108,20 @@ public class ThreadDumpParser {
         try { Date date = dateFormat.parse(line);  return true; } catch (ParseException e) { return false; }
     }
 
+    private static boolean IsExcluded(String line, String[] exclusions) {
+        for (String str : exclusions) {
+            if (line.contains(str)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // metodo para listar todos os ficheiros de uma directoria 
     // partindo do principio que nesta directoria apenas estão os ficheiros que queremos analisar
     private static List<File> listFiles(String dirPath) throws IOException {
         try (Stream<Path> paths = Files.walk(Paths.get(dirPath))) {
-            return paths.filter(Files::isRegularFile)
-                        .map(Path::toFile)
-                        .collect(Collectors.toList());
+            return paths.filter(Files::isRegularFile).map(Path::toFile).collect(Collectors.toList());
         }
     }
 

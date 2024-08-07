@@ -21,7 +21,6 @@ public class ThreadDump {
     private List<String> stackTrace = new ArrayList<>();
 
     private String quotedPart;
-    private String restPart;
 
     public void parseDateLine(String line){
 
@@ -41,7 +40,6 @@ public class ThreadDump {
         
         if (matcher.find()) {
             quotedPart = matcher.group(1); // The part inside quotes
-            restPart = matcher.group(2).trim(); // The rest of the string
         }
 
         this.threadName = quotedPart.replaceAll("\"", "");
@@ -56,7 +54,6 @@ public class ThreadDump {
     }
 
     //java.lang.Thread.State: RUNNABLE
-
     public void parseStateLine(String line) {
         this.state = line.split("java.lang.Thread.State: ")[1];
     }
