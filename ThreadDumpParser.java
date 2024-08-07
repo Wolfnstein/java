@@ -14,19 +14,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 public class ThreadDumpParser {
-      
+    
+    // diretoria onde se encontram os dumps a serem analisados
     private static String inputDirPath   = "D:\\Work\\GitRepo\\Workspace\\CodeTest\\crossjoin\\crossjoin_td_test"; 
-    private static String outputFilePath = "D:\\Work\\GitRepo\\Workspace\\CodeTest\\crossjoin\\java\\output.csv";
+    // diretoria de output do ficheiro csv
+    private static String outputFilePath = "output.csv";
 
+    // array de strings com o cabeçalho do csv
     private static final String[] headers = {
             "yyyy-mm-dd", "yyyy-mm-dd hh24:00:00", "yyyy-mm-dd hh24:mi:00", "yyyy-mm-dd hh24:mis:ss", "thread type", "thread name", "thread state", "last call", "last custom call"
             //",prio value", "os_prio value", "cpu value", "elapsed value", "tid value", "nid value"
     };
 
+    // array de strings com exclusões de inicis de linha que não quero guardar
+    // nota: são Threads comuns a todos os ficheiros não contam aparentemente para o numero de Threads na _java_thread_list 
+    //       escolhi não contar com elas.
     private static String[] exclusions =  {
         "VM Thread", "GC Thread#0", "G1 Main Marker", "G1 Conc#0", "G1 Refine#0", "G1 Young RemSet Sampling", "VM Periodic Task Thread"
     };
 
+    // metodo main, basta correr este java para se conseguir 
     public static void main(String[] args) {
         try {
 
@@ -60,18 +67,22 @@ public class ThreadDumpParser {
 
         // buffer standard de leitura de um ficheiro
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
-              
+        
+        // string onde vamos guardar a data do ficheiro que estamos a ler
         String fileDateTime = "";
 
         // linha a ser analisada
         String line;    
         
+        // Objeto do tipo ThreadDump
         ThreadDump currentThreadInfo = null;
 
         // enquanto o buffer de leitura tiver linhas para serem lidas ... 
         while ((line = reader.readLine()) != null) {
 
+            // ver se a linha encontrada é uma data 
             if (isDate(line)){
+                // se for preencher a string fileDateTime com a data 
                 fileDateTime = line;
             }
             
@@ -85,36 +96,55 @@ public class ThreadDumpParser {
                 currentThreadInfo.parseDateLine(fileDateTime);
                 
                 // criamos um ThreadInfo                
-                currentThreadInfo.parseThreadLine(line);
-                                
+                currentThreadInfo.parseThreadLine(line);                                
             
             // para cada Thread podemos ter o seu estado se encontrar-mos um .. 
             } else if (line.contains("java.lang.Thread.State:")) {
                 currentThreadInfo.parseStateLine(line);
+            // para cada Thread podemos ver os stacktrace nas linhas que começam por "at "
             } else if (line.contains("at ")) {
                 currentThreadInfo.addStackTrace(line);
             }
         }
+        // adicionar a thread na lista com todas as Threads encontradas.
         if (currentThreadInfo != null) {
             allThreads.add(currentThreadInfo);
         }
 
+        // fechar o stream reader.
         reader.close();
+        // devolver a lista com todas as Threads
         return allThreads;
     }    
 
+    // metodo para verificar se a linha é uma data
     private static boolean isDate(String line) {
+        // definir o formato da data que se encontra nos ficheiros
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        // tentar fazer parse da data, se for possivel é porque é uma data se for 
+        // para excepção do parse é porque a linha não é uma data 
+        // nota: codigo um pouco feito gostava de fazer melhor aqui !! mas funciona !
         try { @SuppressWarnings("unused")
-        Date date = dateFormat.parse(line);  return true; } catch (ParseException e) { return false; }
+            Date date = dateFormat.parse(line);  
+            return true; 
+        } 
+        catch (ParseException e) { 
+            return false; 
+        }
     }
 
+    // metodo para vermos se a linha contem uma Thread a ser excluida
     private static boolean IsExcluded(String line, String[] exclusions) {
+        // por cada exclusão encontrada no array de strings de exclusies colocar essa string em str
         for (String str : exclusions) {
+            // verificar se a linha contem essa string str 
             if (line.contains(str)) {
+                // contem a exclusão
                 return true;
             }
         }
+        // não contem a exclusão
         return false;
     }
 
@@ -131,15 +161,20 @@ public class ThreadDumpParser {
         FileWriter writer = new FileWriter(filePath);
 
         // escrever o cabeçalho
-        writer.append(String.join(";", headers));
+        writer.append(String.join(",", headers));
+        // proxima linha
         writer.append("\n");
         
-        // para cada registo em allThreadsDumps ...
+        // para cada registo na lista de allThreadsDumps colocar o valor num objeto do tipo ThreadDump
         for (ThreadDump info : allThreadsDumps) {
-            writer.append(String.join(";", info.toCSVRecord()));
+            // adicionar no ficheiro os campos que se encontram no objeto do tipo ThreadDump delimitados por ','
+            // ',' para facilitar o import do csv no excel.
+            writer.append(String.join(",", info.toCSVRecord()));          
+            // proxima linha
             writer.append("\n");
         }
         
+        // fechar writer
         writer.flush();
         writer.close();
     } 

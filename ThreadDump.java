@@ -85,6 +85,6 @@ public class ThreadDump {
                 return line;
             }
         }
-        return stackTrace.isEmpty() ? "" : stackTrace.get(stackTrace.size() - 1);
+        return stackTrace.isEmpty() ? "" : stackTrace.get(stackTrace.size() - 1).replaceAll("at ", "");
     }
 }
